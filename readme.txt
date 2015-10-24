@@ -34,6 +34,9 @@ Yes.
 
 == Changelog ==
 
+= 1.0.1 =
+* Now uses WPTagSanitizer for normalizing tags, if WPTagSanitizer is not installed, all tags will just be imported as is with no modification.
+
 = 1.0.0 =
 * Uploaded plugin.
 

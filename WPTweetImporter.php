@@ -5,7 +5,7 @@
   Plugin URI: https://github.com/larjen/WPTweetImporter
   Description: Imports twitter messages as posts in your Wordpress blog
   Author: Lars Jensen
-  Version: 1.0.0
+  Version: 1.0.1
   Author URI: http://exenova.dk/
  */
 
@@ -60,7 +60,7 @@ class WPTweetImporter {
         global $table_prefix;
         global $wpdb;
 
-        $sql = 'SELECT DISTINCT post_id FROM ' . $table_prefix . 'postmeta WHERE meta_key = "twittertowordpress"';
+        $sql = 'SELECT DISTINCT post_id FROM ' . $table_prefix . 'postmeta WHERE meta_key = "WPTweetImporter"';
         $rows = $wpdb->get_results($sql, 'ARRAY_A');
         foreach ($rows as $row) {
             wp_delete_post($row["post_id"], true);
@@ -195,6 +195,12 @@ class WPTweetImporter {
     static function get_tags($text) {
         $stringArray = explode(" ", $text);
         $returnArray = array();
+
+        $useWPTagSanitizer = false;
+        if (is_callable('WPTagSanitizer::sanitizeTags')) {
+            $useWPTagSanitizer = true;
+        }
+        
         foreach ($stringArray as $key => $value) {
             if (substr($value, 0, 1) == "#") {
 
@@ -207,15 +213,9 @@ class WPTweetImporter {
                 $tag = trim($tag, ".");
                 $tag = trim($tag, ":");
 
-                //normalize tags
-                if (strtoupper($tag) == 'HTML5' || strtoupper($tag) == 'HTML' || strtoupper($tag) == 'XHTML') {
-                    $tag = 'HTML';
-                }
-                if (strtoupper($tag) == 'CSS3' || strtoupper($tag) == 'CSS') {
-                    $tag = 'CSS';
-                }
-                if (strtoupper($tag) == 'JS' || strtoupper($tag) == 'JAVASCRIPT') {
-                    $tag = 'JavaScript';
+                // check to see if #WPTatSanitizer is installed, then use it for normalizing tags.
+                if ($useWPTagSanitizer){
+                    $tag = WPTagSanitizer::sanitizeTags($tag);
                 }
 
                 array_push($returnArray, $tag);
@@ -281,7 +281,7 @@ class WPTweetImporter {
         add_post_meta($insert, 'retweeted', $tweet->retweeted, true);
         add_post_meta($insert, 'geo', $tweet->geo, true);
         add_post_meta($insert, 'id', $tweet->id, true);
-        add_post_meta($insert, 'twittertowordpress', 'true', true);
+        add_post_meta($insert, 'WPTweetImporter', 'true', true);
 
         return true;
     }
@@ -345,6 +345,11 @@ class WPTweetImporter {
         // debug
         if (self::$debug) {
             echo '<pre>';
+            if (!is_callable('WPTagSanitizer::sanitizeTags')) {
+                echo 'WPTagSanitizer::sanitizeTags is not installed.' . PHP_EOL;
+            }else{
+                echo 'WPTagSanitizer::sanitizeTags installed.' . PHP_EOL;
+            }
             echo 'get_option("WPTweetImporter_ACTIVE")=' . get_option("WPTweetImporter_ACTIVE") . PHP_EOL;
             echo 'get_option("WPTweetImporter_CURRENT_PAGE")=' . get_option("WPTweetImporter_CURRENT_PAGE") . PHP_EOL;
             echo 'get_option("WPTweetImporter_NUMBER_OF_TWEETS")=' . get_option("WPTweetImporter_NUMBER_OF_TWEETS") . PHP_EOL;
