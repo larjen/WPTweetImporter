@@ -12,10 +12,10 @@ A simple automated Wordpress plugin that imports tweets as posts.
 6. Activate the import of tweets.
 7. All of your tweets are now accesible as posts.
 
-== Changelog ==
+## Changelog
 
-= 1.0.1 =
+# 1.0.1
 * Now uses WPTagSanitizer for normalizing tags, if WPTagSanitizer is not installed, all tags will just be imported as is with no modification.
 
-= 1.0.0 =
+# 1.0.0
 * Uploaded plugin.
