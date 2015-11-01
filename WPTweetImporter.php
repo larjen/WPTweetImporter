@@ -5,7 +5,7 @@
   Plugin URI: https://github.com/larjen/WPTweetImporter
   Description: Imports twitter messages as posts in your Wordpress blog
   Author: Lars Jensen
-  Version: 1.0.1
+  Version: 1.0.2
   Author URI: http://exenova.dk/
  */
 
@@ -26,16 +26,33 @@ class WPTweetImporter {
         update_option("WPTweetImporter_ACTIVE", false);
         update_option("WPTweetImporter_STATUS", date("Y-m-d H:i:s") . " - Plugin is awaiting configuration by you. When you have configured the plugin, don't forget to activate the import option.");
         update_option("WPTweetImporter_MESSAGES", []);
-
         update_option("WPTweetImporter_INFOCLASS", "updated");
 
+        // add category tweet to wp
+        $term = term_exists('Tweet', 'category');
+        if ($term == 0 or $term == null) {
+            $tweet_cat = array(
+                'cat_name' => 'Tweet',
+                'category_description' => 'Tweets imported from twitter',
+                'category_nicename' => 'tweet',
+                'category_parent' => ''
+            );
+
+            // Create the category
+            $tweet_id = wp_insert_category($tweet_cat);
+            
+            // Set the option as default
+            update_option("WPTweetImporter_TWITTER_CATEGORY", $tweet_id);
+        }
+
+        // start aggressive schedule
         self::start_aggressive_schedule();
     }
 
     static function add_message($message) {
 
         $messages = get_option("WPTweetImporter_MESSAGES");
-        array_push($messages, date("Y-m-d H:i:s") . " - ".$message);
+        array_push($messages, date("Y-m-d H:i:s") . " - " . $message);
 
         // keep the amount of messages below 10
         if (count($messages) > 10) {
@@ -47,12 +64,12 @@ class WPTweetImporter {
 
     static function purge_tweets() {
 
+        // deactivate import
+        self::deactivate_import();
+
         // reset the twitter page counter to 0
         update_option("WPTweetImporter_CURRENT_PAGE", 0);
         update_option("WPTweetImporter_FETCHED_ALL_TWEETS", false);
-        
-        // deactivate the plugin
-        update_option("WPTweetImporter_ACTIVE", false);
 
         // start aggressive schedule again
         self::start_aggressive_schedule();
@@ -166,6 +183,8 @@ class WPTweetImporter {
 
                 if (get_option("WPTweetImporter_FETCHED_ALL_TWEETS") == false) {
                     update_option("WPTweetImporter_STATUS", date("Y-m-d H:i:s") . " - Plugin is completing the import of your tweets.");
+                } else {
+                    update_option("WPTweetImporter_STATUS", date("Y-m-d H:i:s") . " - Plugin is fetching new tweets hourly.");
                 }
 
                 $succesfullyImportedNumberOfTweets = 0;
@@ -200,7 +219,7 @@ class WPTweetImporter {
         if (is_callable('WPTagSanitizer::sanitizeTags')) {
             $useWPTagSanitizer = true;
         }
-        
+
         foreach ($stringArray as $key => $value) {
             if (substr($value, 0, 1) == "#") {
 
@@ -214,7 +233,7 @@ class WPTweetImporter {
                 $tag = trim($tag, ":");
 
                 // check to see if #WPTatSanitizer is installed, then use it for normalizing tags.
-                if ($useWPTagSanitizer){
+                if ($useWPTagSanitizer) {
                     $tag = WPTagSanitizer::sanitizeTags($tag);
                 }
 
@@ -301,6 +320,26 @@ class WPTweetImporter {
         add_management_page('WPTweetImporter', 'WPTweetImporter', 'activate_plugins', 'WPTweetImporter', array('WPTweetImporter', 'plugin_options'));
     }
 
+    static function activate_import() {
+        if (get_option("WPTweetImporter_ACTIVE") == false) {
+            self::add_message("Import of tweets has been activated.");
+            if (get_option("WPTweetImporter_FETCHED_ALL_TWEETS") == false) {
+                update_option("WPTweetImporter_STATUS", date("Y-m-d H:i:s") . " - Plugin is completing the import of your tweets.");
+            } else {
+                update_option("WPTweetImporter_STATUS", date("Y-m-d H:i:s") . " - Plugin is fetching new tweets hourly.");
+            }
+        }
+        update_option("WPTweetImporter_ACTIVE", true);
+    }
+
+    static function deactivate_import() {
+        if (get_option("WPTweetImporter_ACTIVE") == true) {
+            self::add_message("Import of tweets has been deactivated.");
+            update_option("WPTweetImporter_STATUS", date("Y-m-d H:i:s") . " - Plugin is not fetching new tweets.");
+        }
+        update_option("WPTweetImporter_ACTIVE", false);
+    }
+
     static function plugin_options() {
         if (!current_user_can('manage_options')) {
             wp_die(__('You do not have sufficient permissions to access this page.'));
@@ -313,20 +352,14 @@ class WPTweetImporter {
                 update_option($value, $_POST[$value]);
             }
         }
-        
+
         if (isset($_POST["ACTIVE"])) {
             if ($_POST["ACTIVE"] == 'activated') {
-                if (get_option("WPTweetImporter_ACTIVE") == false) {
-                    self::add_message("Import of tweets has been activated.");
-                }
-                update_option("WPTweetImporter_ACTIVE", true);
+                self::activate_import();
             }
 
             if ($_POST["ACTIVE"] == 'deactivated') {
-                if (get_option("WPTweetImporter_ACTIVE") == true) {
-                    self::add_message("Import of tweets has been deactivated.");
-                }
-                update_option("WPTweetImporter_ACTIVE", false);
+                self::deactivate_import();
             }
         }
 
@@ -347,7 +380,7 @@ class WPTweetImporter {
             echo '<pre>';
             if (!is_callable('WPTagSanitizer::sanitizeTags')) {
                 echo 'WPTagSanitizer::sanitizeTags is not installed.' . PHP_EOL;
-            }else{
+            } else {
                 echo 'WPTagSanitizer::sanitizeTags installed.' . PHP_EOL;
             }
             echo 'get_option("WPTweetImporter_ACTIVE")=' . get_option("WPTweetImporter_ACTIVE") . PHP_EOL;
@@ -356,20 +389,25 @@ class WPTweetImporter {
             echo 'get_option("WPTweetImporter_STATUS")=' . get_option("WPTweetImporter_STATUS") . PHP_EOL;
             echo 'get_option("WPTweetImporter_FETCHED_ALL_TWEETS")=' . get_option("WPTweetImporter_FETCHED_ALL_TWEETS") . PHP_EOL;
             echo 'get_option("WPTweetImporter_MESSAGES")=' . print_r(get_option("WPTweetImporter_MESSAGES")) . PHP_EOL;
+            echo 'get_option("WPTweetImporter_TWEET_AS")=' . print_r(get_option("WPTweetImporter_TWEET_AS")) . PHP_EOL;
+            echo 'get_option("WPTweetImporter_TWITTER_CATEGORY")=' . print_r(get_option("WPTweetImporter_TWITTER_CATEGORY")) . PHP_EOL;
+
+
+
             echo '</pre>';
         }
 
         // print the admin page
         echo '<div class="wrap">';
         echo '<h2>WPTweetImporter</h2>';
-        
+
         $messages = get_option("WPTweetImporter_MESSAGES");
 
         while (!empty($messages)) {
             $message = array_shift($messages);
             echo '<div id="setting-error-settings_updated" class="updated settings-error notice is-dismissible"><p><strong>' . $message . '</strong></p><button type="button" class="notice-dismiss"><span class="screen-reader-text">Afvis denne meddelelse.</span></button></div>';
         }
-        
+
         // since the messages has been shown, purge them.
         update_option("WPTweetImporter_MESSAGES", []);
 
@@ -379,9 +417,9 @@ class WPTweetImporter {
         echo '<form method="post" action="">';
         echo '<table class="form-table"><tbody>';
 
-        echo '<tr valign="top"><th scope="row">Status:</th><td><p>'. get_option('WPTweetImporter_STATUS') .'</p></td></tr>';
+        echo '<tr valign="top"><th scope="row">Status:</th><td><p>' . get_option('WPTweetImporter_STATUS') . '</p></td></tr>';
 
-        
+
         echo '<tr valign="top"><th scope="row"><label for="TWITTER_CATEGORY">Add tweets to this category</label></th><td>';
 
         wp_dropdown_categories(array('hide_empty' => 0, 'name' => 'WPTweetImporter_TWITTER_CATEGORY', 'orderby' => 'name', 'selected' => get_option('WPTweetImporter_TWITTER_CATEGORY'), 'hierarchical' => true));

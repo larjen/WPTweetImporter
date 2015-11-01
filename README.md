@@ -14,6 +14,9 @@ A simple automated Wordpress plugin that imports tweets as posts.
 
 ## Changelog
 
+### 1.0.2
+* Automatically adds category Tweets as the category tweets are imported to. This can be overridden in the options panel.
+
 ### 1.0.1
 * Now uses WPTagSanitizer for normalizing tags, if WPTagSanitizer is not installed, all tags will just be imported as is with no modification.
 
