@@ -34,6 +34,10 @@ Yes.
 
 == Changelog ==
 
+= 1.0.3 =
+* Refactoring plugin for better performance.
+* Now optionally parses hash-tags in tweets if WPTagSanitizer is installed.
+
 = 1.0.2 =
 * Automatically adds category Tweets as the category tweets are imported to. This can be overridden in the options panel.
 
