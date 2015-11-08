@@ -68,7 +68,7 @@ class WPTweetImporter {
         self::clear_schedule();
 
         //gives the unix timestamp for today's date + 1 minute
-        $start = strtotime(date('D M Y')) + (1 * 60);
+        $start = time() + (1 * 60);
 
         // schedule aggressive updates until all tweets are fetched
         wp_schedule_event($start, 'everyMinute', self::$plugin_name . '_update');
@@ -79,7 +79,7 @@ class WPTweetImporter {
         self::clear_schedule();
 
         //gives the unix timestamp for today's date + 1 minute
-        $start = strtotime(date('D M Y')) + (1 * 60);
+        $start = time() + (1 * 60);
 
         // schedule moderate updates interval
         wp_schedule_event($start, 'hourly', self::$plugin_name . '_update');

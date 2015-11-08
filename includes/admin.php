@@ -128,29 +128,29 @@ class WPTweetImporterAdmin extends WPTweetImporter {
         echo '<form method="post" action="">';
         echo '<table class="form-table"><tbody>';
 
-        echo '<tr valign="top"><th scope="row">Status:</th><td><p>' . get_option('WPTweetImporter_STATUS') . '</p></td></tr>';
+        echo '<tr valign="top"><th scope="row">Status:</th><td><p>' . get_option(self::$plugin_name.'_STATUS') . '</p></td></tr>';
 
 
         echo '<tr valign="top"><th scope="row"><label for="TWITTER_CATEGORY">Add tweets to this category</label></th><td>';
 
-        wp_dropdown_categories(array('hide_empty' => 0, 'name' => 'WPTweetImporter_TWITTER_CATEGORY', 'orderby' => 'name', 'selected' => get_option('WPTweetImporter_TWITTER_CATEGORY'), 'hierarchical' => true));
+        wp_dropdown_categories(array('hide_empty' => 0, 'name' => self::$plugin_name.'_TWITTER_CATEGORY', 'orderby' => 'name', 'selected' => get_option(self::$plugin_name.'_TWITTER_CATEGORY'), 'hierarchical' => true));
 
         echo '</td></tr>';
 
         echo '<tr valign="top"><th scope="row"><label for="TWITTER_CATEGORY">Add tweets as this user</label></th><td>';
 
-        wp_dropdown_users(array('hide_empty' => 0, 'name' => 'WPTweetImporter_TWEET_AS', 'orderby' => 'name', 'selected' => get_option('WPTweetImporter_TWEET_AS')));
+        wp_dropdown_users(array('hide_empty' => 0, 'name' => self::$plugin_name.'_TWEET_AS', 'orderby' => 'name', 'selected' => get_option(self::$plugin_name.'_TWEET_AS')));
 
         echo '</td></tr>';
 
-        echo '<tr valign="top"><th scope="row">Delete tweets</th><td><fieldset><legend class="screen-reader-text"><span>Purge Tweets</span></legend><label for="PURGE_TWEETS"><input id="PURGE_TWEETS" name="WPTweetImporter_PURGE_TWEETS" type="checkbox"></label><p class="description">Will delete all tweets from blog.</p></fieldset></td></tr>';
+        echo '<tr valign="top"><th scope="row">Delete tweets</th><td><fieldset><legend class="screen-reader-text"><span>Purge Tweets</span></legend><label for="PURGE_TWEETS"><input id="PURGE_TWEETS" name="'.self::$plugin_name.'_PURGE_TWEETS" type="checkbox"></label><p class="description">Will delete all tweets from blog.</p></fieldset></td></tr>';
 
-        echo '<tr valign="top"><th scope="row">Force import</th><td><fieldset><legend class="screen-reader-text"><span>Force import</span></legend><label for="FORCE_IMPORT"><input id="FORCE_IMPORT" name="WPTweetImporter_FORCE_IMPORT" type="checkbox" ' . $force_import_checked . '></label><p class="description">Force import of tweets, instead of waiting for the scheduled update.</p></fieldset></td></tr>';
+        echo '<tr valign="top"><th scope="row">Force import</th><td><fieldset><legend class="screen-reader-text"><span>Force import</span></legend><label for="FORCE_IMPORT"><input id="FORCE_IMPORT" name="'.self::$plugin_name.'_FORCE_IMPORT" type="checkbox" ' . $force_import_checked . '></label><p class="description">Force import of tweets, instead of waiting for the scheduled update.</p></fieldset></td></tr>';
 
 
         echo '<tr valign="top"><th scope="row">Activate import</th><td><fieldset><legend class="screen-reader-text"><span>Activate</span></legend>';
 
-        if (get_option('WPTweetImporter_ACTIVE') == true) {
+        if (get_option(self::$plugin_name.'_ACTIVE') == true) {
             echo '<label for="ACTIVE"><input checked="checked" id="ACTIVE" name="ACTIVE" type="radio" value="activated"> Import of tweets is active.</label><br /><legend class="screen-reader-text"><span>Dectivate</span></legend><label for="DEACTIVE"><input id="DEACTIVE" name="ACTIVE" type="radio" value="deactivated"> Import of tweets is deactivated.</label>';
         } else {
             echo '<label for="ACTIVE"><input id="ACTIVE" name="ACTIVE" type="radio" value="activated"> Import of tweets is active.</label><br /><legend class="screen-reader-text"><span>Dectivate</span></legend><label for="DEACTIVE"><input checked="checked" id="DEACTIVE" name="ACTIVE" type="radio" value="deactivated"> Import of tweets is deactivated.</label>';
@@ -163,12 +163,12 @@ class WPTweetImporterAdmin extends WPTweetImporter {
 
         echo '<h3 class="title">Twitter Account</h3>';
         echo '<table class="form-table"><tbody>';
-        echo '<tr valign="top"><th scope="row"><label for="TWITTER_SCREEN_NAME">Twitter name (Screen name)</label></th><td><input id="TWITTER_SCREEN_NAME" name="WPTweetImporter_TWITTER_SCREEN_NAME" type="text" value="' . get_option(self::$plugin_name."_TWITTER_SCREEN_NAME") . '" class="regular-text"></td></tr>';
+        echo '<tr valign="top"><th scope="row"><label for="TWITTER_SCREEN_NAME">Twitter name (Screen name)</label></th><td><input id="TWITTER_SCREEN_NAME" name="'.self::$plugin_name.'_TWITTER_SCREEN_NAME" type="text" value="' . get_option(self::$plugin_name."_TWITTER_SCREEN_NAME") . '" class="regular-text"></td></tr>';
         echo '<tr valign="top"><th scope="row"></th><td><p>You must obtain the following 4 keys from Twitter to enable this plugin to work. Login and create a new app <a href="https://dev.twitter.com/apps">here</a>.</p></td></tr>';
-        echo '<tr valign="top"><th scope="row"><label for="TWITTER_CONSUMER_KEY">Consumer key</label></th><td><input id="TWITTER_CONSUMER_KEY" name="WPTweetImporter_TWITTER_CONSUMER_KEY" type="text" value="' . get_option(self::$plugin_name."_TWITTER_CONSUMER_KEY") . '" class="regular-text"></td></tr>';
-        echo '<tr valign="top"><th scope="row"><label for="TWITTER_CONSUMER_SECRET">Consumer secret</label></th><td><input id="TWITTER_CONSUMER_SECRET" name="WPTweetImporter_TWITTER_CONSUMER_SECRET" type="text" value="' . get_option(self::$plugin_name."_TWITTER_CONSUMER_SECRET") . '" class="regular-text"></td></tr>';
-        echo '<tr valign="top"><th scope="row"><label for="TWITTER_ACCESS_TOKEN">Access token</label></th><td><input id="TWITTER_ACCESS_TOKEN" name="WPTweetImporter_TWITTER_ACCESS_TOKEN" type="text" value="' . get_option(self::$plugin_name."_TWITTER_ACCESS_TOKEN") . '" class="regular-text"></td></tr>';
-        echo '<tr valign="top"><th scope="row"><label for="TWITTER_ACCESS_TOKEN_SECRET">Access token secret</label></th><td><input id="TWITTER_ACCESS_TOKEN_SECRET" name="WPTweetImporter_TWITTER_ACCESS_TOKEN_SECRET" type="text" value="' . get_option(self::$plugin_name."_TWITTER_ACCESS_TOKEN_SECRET") . '" class="regular-text"></td></tr>';
+        echo '<tr valign="top"><th scope="row"><label for="TWITTER_CONSUMER_KEY">Consumer key</label></th><td><input id="TWITTER_CONSUMER_KEY" name="'.self::$plugin_name.'_TWITTER_CONSUMER_KEY" type="text" value="' . get_option(self::$plugin_name."_TWITTER_CONSUMER_KEY") . '" class="regular-text"></td></tr>';
+        echo '<tr valign="top"><th scope="row"><label for="TWITTER_CONSUMER_SECRET">Consumer secret</label></th><td><input id="TWITTER_CONSUMER_SECRET" name="'.self::$plugin_name.'_TWITTER_CONSUMER_SECRET" type="text" value="' . get_option(self::$plugin_name."_TWITTER_CONSUMER_SECRET") . '" class="regular-text"></td></tr>';
+        echo '<tr valign="top"><th scope="row"><label for="TWITTER_ACCESS_TOKEN">Access token</label></th><td><input id="TWITTER_ACCESS_TOKEN" name="'.self::$plugin_name.'_TWITTER_ACCESS_TOKEN" type="text" value="' . get_option(self::$plugin_name."_TWITTER_ACCESS_TOKEN") . '" class="regular-text"></td></tr>';
+        echo '<tr valign="top"><th scope="row"><label for="TWITTER_ACCESS_TOKEN_SECRET">Access token secret</label></th><td><input id="TWITTER_ACCESS_TOKEN_SECRET" name="'.self::$plugin_name.'_TWITTER_ACCESS_TOKEN_SECRET" type="text" value="' . get_option(self::$plugin_name."_TWITTER_ACCESS_TOKEN_SECRET") . '" class="regular-text"></td></tr>';
         echo '</tbody></table>';
 
 
