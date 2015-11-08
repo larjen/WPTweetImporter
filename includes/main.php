@@ -78,8 +78,8 @@ class WPTweetImporter {
         // unschedule previous schedule
         self::clear_schedule();
 
-        //gives the unix timestamp for today's date + 1 minute
-        $start = time() + (1 * 60);
+        //gives the unix timestamp for today's date + 60 minutes
+        $start = time() + (60 * 60);
 
         // schedule moderate updates interval
         wp_schedule_event($start, 'hourly', self::$plugin_name . '_update');
