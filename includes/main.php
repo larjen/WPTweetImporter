@@ -183,12 +183,23 @@ class WPTweetImporter {
      * Truncates long URLs to shoter ones.
      */
     static function truncate_url($matches){
-        $textLength = strlen($matches[0]);
-        $maxChars = 25;
+        
+        $innerUrl = "";
+        
+        if (isset($matches[2])){
+            $innerUrl = $matches[2];
+        }
+
+        if (isset($matches[3])){
+            $innerUrl = $innerUrl . $matches[3];
+        }
+        
+        $textLength = strlen($innerUrl);
+        $maxChars = 18;
         if ($textLength > $maxChars){
-            $result = substr_replace($matches[0], '...', $maxChars, $textLength);
+            $result = substr_replace($innerUrl, '...', $maxChars, $textLength);
         } else {
-            $result = $matches[0];
+            $result = $innerUrl;
         }
         return '<a target="_blank" href="'.$matches[0].'">'.$result.'</a>';
     }
