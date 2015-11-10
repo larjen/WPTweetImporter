@@ -178,6 +178,33 @@ class WPTweetImporter {
             }
         }
     }
+    
+    /*
+     * Truncates long URLs to shoter ones.
+     */
+    static function truncate_url($matches){
+        $textLength = strlen($matches[0]);
+        $maxChars = 18;
+        $result = substr_replace($matches[0], '...', $maxChars, $textLength);
+        return '<a target="_blank" href="'.$matches[0].'">'.$result.'</a>';
+    }
+    
+    /*
+     * Find links in the text and make them links.
+     */
+    static function addLinksToText($string){
+        
+        //find links and make them hyperlinks
+        $string = preg_replace_callback('@(https?://([-\w\.]+)+(/([\w/_\.]*(\?\S+)?(#\S+)?)?)?)@', 'self::truncate_url', $string);
+        
+        //find @username
+        $string = preg_replace('/@(\w+)/', '<a target="_blank" href="http://twitter.com/$1">@$1</a>', $string);
+        
+        //find #hashtags for search on twitter
+        $string = preg_replace('/#(\w+)/', ' <a target="_blank" href="http://twitter.com/search?q=%23$1">#$1</a>', $string);
+        
+        return $string;
+    }
 
     static function insert_twitter_post($tweet) {
 
@@ -196,14 +223,7 @@ class WPTweetImporter {
             $tags = WPTagSanitizer::getTagsFromString($original_text);
         }
 
-        //find links and make them hyperlinks
-        $tweet->text = preg_replace('@(https?://([-\w\.]+)+(/([\w/_\.]*(\?\S+)?(#\S+)?)?)?)@', '<a target="_blank" href="$1">$1</a>', $tweet->text);
-
-        //find @username
-        $tweet->text = preg_replace('/@(\w+)/', '<a target="_blank" href="http://twitter.com/$1">@$1</a>', $tweet->text);
-
-        //find #hashtags for search on twitter
-        $tweet->text = preg_replace('/#(\w+)/', ' <a target="_blank" href="http://twitter.com/search?q=%23$1">#$1</a>', $tweet->text);
+        $tweet->text = self::addLinksToText($tweet->text);
 
         // build the post
         $post = array(
