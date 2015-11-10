@@ -184,8 +184,12 @@ class WPTweetImporter {
      */
     static function truncate_url($matches){
         $textLength = strlen($matches[0]);
-        $maxChars = 18;
-        $result = substr_replace($matches[0], '...', $maxChars, $textLength);
+        $maxChars = 25;
+        if ($textLength > $maxChars){
+            $result = substr_replace($matches[0], '...', $maxChars, $textLength);
+        } else {
+            $result = $matches[0];
+        }
         return '<a target="_blank" href="'.$matches[0].'">'.$result.'</a>';
     }
     
