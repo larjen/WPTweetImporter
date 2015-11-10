@@ -14,6 +14,9 @@ A simple automated Wordpress plugin that imports tweets as posts.
 
 ## Changelog
 
+### 1.0.4
+* Now truncating very long urls.
+
 ### 1.0.3
 * Refactoring plugin for better performance.
 * Now optionally parses hash-tags in tweets if WPTagSanitizer is installed.
