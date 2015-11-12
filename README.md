@@ -1,6 +1,6 @@
 # WPTweetImporter
 
-A simple automated Wordpress plugin that imports tweets as posts.
+WordPress plugin that imports tweets as posts in your Wordpress blog.
 
 ## Installation
 
@@ -29,3 +29,17 @@ A simple automated Wordpress plugin that imports tweets as posts.
 
 ### 1.0.0
 * Uploaded plugin.
+
+[//]: title (WPTweetImporter)
+[//]: category (work)
+[//]: start_date (20151021)
+[//]: end_date (#)
+[//]: excerpt (WordPress plugin that imports tweets as posts in your Wordpress blog.)
+[//]: tag (GitHub)
+[//]: tag (WordPress)
+[//]: tag (PHP)
+[//]: tag (Twitter)
+[//]: url_github (https://github.com/larjen/WPTweetImporter)
+[//]: url_demo (#) 
+[//]: url_wordpress (https://wordpress.org/plugins/wptweetimporter/)
+[//]: url_download (https://github.com/larjen/WPTweetImporter/archive/master.zip)
