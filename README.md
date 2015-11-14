@@ -40,6 +40,7 @@ WordPress plugin that imports tweets as posts in your Wordpress blog.
 [//]: tag (WordPress)
 [//]: tag (PHP)
 [//]: tag (Twitter)
+[//]: tag (Work)
 [//]: url_github (https://github.com/larjen/WPTweetImporter)
 [//]: url_demo (#) 
 [//]: url_wordpress (https://wordpress.org/plugins/wptweetimporter/)
