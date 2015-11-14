@@ -247,6 +247,7 @@ class WPTweetImporter {
             'ping_status' => 'closed', // 'closed' means pingbacks or trackbacks turned off
             'post_author' => get_option(self::$plugin_name . "_TWEET_AS"), //The user ID number of the author.
             'post_content' => $tweet->text, //The full text of the post.
+            'post_excerpt' => $tweet->text, //The full text of the post in the excerpt
             'post_date' => date("Y-m-d H:i:s", strtotime($tweet->created_at)), //The time post was made.
             'post_date_gmt' => gmdate("Y-m-d H:i:s", strtotime($tweet->created_at)), //The time post was made, in GMT.
             'post_status' => 'publish', //Set the status of the new post. 
