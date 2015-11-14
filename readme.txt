@@ -36,6 +36,7 @@ Yes.
 
 = 1.0.4 =
 * Now truncating very long urls.
+* Full text of the tweet also stored in the post excerpt.
 
 = 1.0.3 =
 * Refactoring plugin for better performance.
